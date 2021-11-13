@@ -47,10 +47,11 @@ class RecordingHandler(object):
         recording_time = recording_data["recording_start"]
         recording_date = recording_data["recording_start"][:10]
         if self.topic in self.regular_topics:
+            filename = f"{recording_date}/{recording_time}/{self.topic}_{recording_time}_{self.recording_type}.{file_extension}"
+        else:
             topic_name = stringcase.snakecase(self.topic)
             filename = f"{recording_date}/{topic_name}/{recording_time}/{self.topic}_{recording_time}_{self.recording_type}.{file_extension}"
-        else:
-            filename = f"{recording_date}/{recording_time}/{self.topic}_{recording_time}_{self.recording_type}.{file_extension}"
+            
 
         return filename
 
