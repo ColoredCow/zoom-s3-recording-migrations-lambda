@@ -57,10 +57,10 @@ class RecordingHandler(object):
     def get_directory_path(self):
         s3_file_path = "Zoom-Recordings/Others/"
         
-        if self.jsonData["payload"]["object"]["topic"] == self.topics["story_club"]:
+        if self.jsonData["payload"]["object"]["topic"] == self.regular_topics["story_club"]:
             s3_file_path = "Zoom-Recordings/Story-Club/"
             self.topic = "Story_Club"
-        elif self.jsonData["payload"]["object"]["topic"] == self.topics["town_hall"]:
+        elif self.jsonData["payload"]["object"]["topic"] == self.regular_topics["town_hall"]:
             s3_file_path = "Zoom-Recordings/Town-Hall/"
             self.topic = "Town_hall"
         else:
