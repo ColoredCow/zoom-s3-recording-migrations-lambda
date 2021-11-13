@@ -1,11 +1,15 @@
-import requests, boto3, os
+import requests, boto3, os, stringcase
 
 class RecordingHandler(object):
     def __init__(self, jsonData):
         self.jsonData = jsonData
         self.s3_bucket = os.environ.get("S3_BUCKET_NAME")
         self.download_token = jsonData["download_token"]
-        self.topic = "recording"
+        self.regular_topics = {
+            "story_club": "Story Club",
+            "town_hall": "Our Townhall",
+        }
+        self.topic = ""
         self.recording_type = None
         self.recording_types_available = [
             "shared_screen_with_speaker_view",
@@ -42,23 +46,25 @@ class RecordingHandler(object):
         file_extension = recording_data["file_extension"].lower()
         recording_time = recording_data["recording_start"]
         recording_date = recording_data["recording_start"][:10]
-        filename = f"{recording_date}/{recording_time}/{self.topic}_{recording_time}_{self.recording_type}.{file_extension}"
+        if self.topic in self.regular_topics:
+            topic_name = stringcase.snakecase(self.topic)
+            filename = f"{recording_date}/{topic_name}/{recording_time}/{self.topic}_{recording_time}_{self.recording_type}.{file_extension}"
+        else:
+            filename = f"{recording_date}/{recording_time}/{self.topic}_{recording_time}_{self.recording_type}.{file_extension}"
 
         return filename
 
     def get_directory_path(self):
-        topics = {
-            "story_club": "Story Club",
-            "town_hall": "Our Townhall",
-        }
         s3_file_path = "Zoom-Recordings/Others/"
         
-        if self.jsonData["payload"]["object"]["topic"] == topics["story_club"]:
+        if self.jsonData["payload"]["object"]["topic"] == self.topics["story_club"]:
             s3_file_path = "Zoom-Recordings/Story-Club/"
             self.topic = "Story_Club"
-        elif self.jsonData["payload"]["object"]["topic"] == topics["town_hall"]:
+        elif self.jsonData["payload"]["object"]["topic"] == self.topics["town_hall"]:
             s3_file_path = "Zoom-Recordings/Town-Hall/"
             self.topic = "Town_hall"
+        else:
+            self.topic = self.jsonData["payload"]["object"]["topic"]
             
         return s3_file_path
     
